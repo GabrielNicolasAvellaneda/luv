@@ -1,8 +1,17 @@
 LUV_TAG=$(shell git describe --tags)
-CMAKE_OPTIONS=
+
 ifdef WITHOUT_AMALG
 	CMAKE_OPTIONS+= -DWITH_AMALG=OFF
 endif
+
+BUILD_SHARED_LIBS ?= OFF
+WITH_SHARED_LIBUV ?= OFF
+WITH_SHARED_LUAJIT ?= OFF
+
+CMAKE_OPTIONS += \
+	-DBUILD_SHARED_LIBS=$(BUILD_SHARED_LIBS) \
+	-DWITH_SHARED_LIBUV=$(WITH_SHARED_LIBUV) \
+	-DWITH_SHARED_LUAJIT=$(WITH_SHARED_LUAJIT)
 
 all: luv
 
@@ -13,7 +22,7 @@ deps/luajit/src:
 	git submodule update --init deps/luajit
 
 build/Makefile: deps/libuv/include deps/luajit/src
-	cmake -H. -Bbuild ${CMAKE_OPTIONS}
+	cmake -H. -Bbuild ${CMAKE_OPTIONS} -DWITH_AMALG=OFF
 
 luv: build/Makefile
 	cmake --build build --config Debug
@@ -38,4 +47,3 @@ publish-luarocks: reset
 	tar -czvf luv-${LUV_TAG}.tar.gz luv-${LUV_TAG}
 	github-release upload --user luvit --repo luv --tag ${LUV_TAG} \
 	  --file luv-${LUV_TAG}.tar.gz --name luv-${LUV_TAG}.tar.gz
-

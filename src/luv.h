@@ -17,6 +17,7 @@
 #ifndef LUV_H
 #define LUV_H
 #include <lua.h>
+#include <lualib.h>
 #include <lauxlib.h>
 #include "uv.h"
 
@@ -94,5 +95,8 @@ static const int luv_sock_string_to_num(const char* string);
 static const char* luv_sock_num_to_string(const int num);
 static const int luv_sig_string_to_num(const char* string);
 static const char* luv_sig_num_to_string(const int num);
+
+typedef lua_State* (*luv_acquire_vm)();
+typedef void (*luv_release_vm)(lua_State* L);
 
 #endif
